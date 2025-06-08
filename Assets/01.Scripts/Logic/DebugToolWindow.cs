@@ -12,20 +12,15 @@ public class DebugToolWindow : EditorWindow
 
     private void OnGUI()
     {
-        GUILayout.Label("디버그 전용 패널");
+        //GUILayout.Label("디버그 전용 패널");
+        //GUILayout.Space(10f);
 
         if (GUILayout.Button("일반 아이템 획득")) GetItem();
-        else if (GUILayout.Button("볼륨 아이템 획득")) VolumeGetItem();
     }
 
     private void GetItem()
     {
-
-    }
-
-    private void VolumeGetItem()
-    {
-
+        GameManager.inventory.GetItem(100);
     }
 }
 #endif

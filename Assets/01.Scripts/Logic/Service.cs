@@ -3,8 +3,8 @@ using UnityEngine;
 
 public delegate void Void();
 
-public interface IActiveUi { public void OnActive(bool _isActive); }
 public interface IUpdateUi { public void OnUpdateUi(); }
+public interface IValueUi<T> { public void SetValue(T _value); }
 
 public static class StringMap
 {
@@ -14,6 +14,9 @@ public static class StringMap
     public const string Item = "Item";
     public const string Image = "Image";
     public const string Icon = "Icon";
+    public const string Count = "Count";
+    public const string Info = "Info";
+    public const string Name = "Name";
 }
 
 public static class Service

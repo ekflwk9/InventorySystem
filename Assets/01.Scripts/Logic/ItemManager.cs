@@ -8,7 +8,7 @@ public static class ItemManager
 
     public static void Load()
     {
-        var items = Resources.LoadAll<Item>("Item");
+        var items = Resources.LoadAll<Item>(StringMap.Item);
 
         for (int i = 0; i < items.Length; i++)
         {

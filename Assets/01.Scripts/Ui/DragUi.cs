@@ -1,33 +1,33 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class DragUi : MonoBehaviour, IValueUi<int>, IValueUi<bool>, IUpdateUi
+public class DragUi : UiBase
 {
     [SerializeField] private Image icon;
 
-    private void Reset()
+    public override void Init()
     {
         icon = this.TryGetComponent<Image>();
         if (icon != null) icon.color = Color.clear;
     }
 
-    private void Awake()
+    private void Start()
     {
-        UiManager.Add(UiType.Drag, this);
+        UiManager.Instance.Add<DragUi>(this);
     }
 
-    public void OnUpdateUi()
+    public void FollowMouse()
     {
         this.transform.position = Input.mousePosition;
     }
 
-    public void SetValue(bool _value)
+    public override void Show(bool _isActive)
     {
-        icon.color = _value ? Color.white : Color.clear;
+        icon.color = _isActive ? Color.white : Color.clear;
     }
 
-    public void SetValue(int _value)
+    public void SetIcon(int _itemId)
     {
-        icon.sprite = ItemManager.GetItem(_value).icon;
+        icon.sprite = ItemManager.GetItem(_itemId).icon;
     }
 }

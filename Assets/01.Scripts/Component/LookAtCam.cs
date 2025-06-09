@@ -7,6 +7,7 @@ public class LookAtCam : MonoBehaviour
 
     private void LateUpdate()
     {
+        //3D Sprite test용
         var distance = Vector3.Distance(this.transform.position, target.transform.position);
         this.transform.localScale = Vector3.one * (distance * constScale);
 

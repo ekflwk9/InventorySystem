@@ -1,62 +1,65 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
-/// <summary>
-/// Ui종류 없을 경우 추가
-/// </summary>
-public enum UiType
+public class UiManager : MonoBehaviour
 {
-    None,
-    Inventory,
-    Drag,
-    ItemInfo,
-}
+    public static UiManager Instance { get; private set; }
+    private Dictionary<Type, UiBase> ui = new();
 
-public static class UiManager
-{
-    private static Dictionary<UiType, IUpdateUi> update = new();
-    private static Dictionary<UiType, IValueUi<int>> integer = new();
-    private static Dictionary<UiType, IValueUi<bool>> boolean = new();
-
-    public static void Add<T>(UiType _type, T _ui) where T : class
+    private void Reset()
     {
-        if (_ui is IUpdateUi isUpdate)
-        {
-            if (!update.ContainsKey(_type)) update.Add(_type, isUpdate);
-            else Service.Log($"{_type}키로 이미 update에 추가된 상태");
-        }
+        var uiBase = this.transform.GetComponentsInChildren<UiBase>();
 
-        if (_ui is IValueUi<bool> isBoolean)
+        for (int i = 0; i < uiBase.Length; i++)
         {
-            if (!boolean.ContainsKey(_type)) boolean.Add(_type, isBoolean);
-            else Service.Log($"{_type}키로 이미 Boolean에 추가된 상태");
-        }
-
-        if (_ui is IValueUi<int> isInteger)
-        {
-            if (!integer.ContainsKey(_type)) integer.Add(_type, isInteger);
-            else Service.Log($"{_type}키로 이미 Integer에 추가된 상태");
+            uiBase[i].Init();
         }
     }
 
-    /// <summary>
-    /// Ui 상태 업데이트
-    /// </summary>
-    /// <param name="_type"></param>
-    public static void UpdateUi(UiType _type)
+    private void Awake()
     {
-        if (update.ContainsKey(_type)) update[_type].OnUpdateUi();
-        else Service.Log($"{_type}키로 추가된 IUpdateUi는 존재하지 않음");
+        if (UiManager.Instance == null)
+        {
+            UiManager.Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+
+        else
+        {
+            Destroy(this.gameObject);
+        }
     }
 
-    public static void Active(UiType _type, bool _isActive)
+    public void Add<T>(UiBase _ui) where T : UiBase
     {
-        if (boolean.ContainsKey(_type)) boolean[_type].SetValue(_isActive);
-        else Service.Log($"{_type}키로 추가된 IActive는 존재하지 않음");
+        var type = typeof(T); 
+
+        if (!ui.ContainsKey(type)) ui.Add(type, _ui);
+        else Service.Log($"{_ui.name}은 이미 추가된 Ui");
     }
 
-    public static void SetInt(UiType _type, int _value)
+    public T Get<T>() where T : UiBase
     {
-        if (integer.ContainsKey(_type)) integer[_type].SetValue(_value);
-        else Service.Log($"{_type}키로 추가된 Integer는 존재하지 않음");
+        var type = typeof(T); 
+
+        if (ui.ContainsKey(type))
+        {
+            return ui[type] as T;
+        }
+
+        else
+        {
+            Service.Log($"{type.Name}이라는 Ui는 추가된적이 없음");
+            return null;
+        }
+    }
+
+    public void Show<T>(bool _isActive) where T : UiBase
+    {
+        var type = typeof(T);
+
+        if (ui.ContainsKey(type)) ui[type].Show(_isActive);
+        else Service.Log($"{type}이라는 Ui는 추가된적이 없음");
     }
 }

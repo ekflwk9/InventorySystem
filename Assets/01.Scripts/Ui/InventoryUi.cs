@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryUi : MonoBehaviour, IValueUi<int>
+public class InventoryUi : UiBase
 {
     [SerializeField] private Slot[] slot;
 
-    private void Reset()
+    public override void Init()
     {
         var tempList = new List<Slot>();
 
@@ -23,24 +23,20 @@ public class InventoryUi : MonoBehaviour, IValueUi<int>
         {
             slot[i] = tempList[i];
         }
+
+        var inventory = FindObjectOfType<Inventory>();
+
+        if (inventory != null) inventory.Init(slot.Length);
+        else Service.Log("현재 Inventory 컴포넌트가 존재하는 오브젝트가 없음");
     }
 
-    private void Awake()
+    private void Start()
     {
-        UiManager.Add(UiType.Inventory, this);
+        UiManager.Instance.Add<InventoryUi>(this);
     }
 
-    public void SetValue(int _value)
+    public void SetInventoryView(int _slotIndex)
     {
-        for (int i = 0; i < slot.Length; i++)
-        {
-            var slotItem = slot[i].itemId;
-
-            if (slotItem == 0 || slotItem == _value)
-            {
-                slot[i].SetSlot(_value);
-                break;
-            }
-        }
+        slot[_slotIndex].SetView(_slotIndex);
     }
 }

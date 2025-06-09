@@ -1,35 +1,28 @@
 ﻿using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class ItemInfoUi : MonoBehaviour, IValueUi<bool>, IValueUi<int>
+public class ItemInfoUi : UiBase
 {
     [SerializeField] private TMP_Text itemInfo;
     [SerializeField] private TMP_Text itemName;
 
-    private void Reset()
+    public override void Init()
     {
         itemName = this.TryGetChildComponent<TMP_Text>(StringMap.Name);
         itemInfo = this.TryGetChildComponent<TMP_Text>(StringMap.Info);
     }
 
-    private void Awake()
+    private void Start()
     {
+        UiManager.Instance.Add<ItemInfoUi>(this);
         this.gameObject.SetActive(false);
-        UiManager.Add(UiType.ItemInfo, this);
     }
 
-    public void SetValue(bool _value)
+    public void SetInfo(Item _item)
     {
-        this.gameObject.SetActive(_value);
+        itemInfo.text = _item.info;
+        itemName.text = _item.itemName;
+
         this.transform.position = Input.mousePosition;
-    }
-
-    public void SetValue(int _value)
-    {
-        var item = ItemManager.GetItem(_value);
-
-        itemInfo.text = item.info;
-        itemName.text = item.itemName;
     }
 }

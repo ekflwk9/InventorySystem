@@ -17,6 +17,7 @@ public static class StringMap
     public const string Count = "Count";
     public const string Info = "Info";
     public const string Name = "Name";
+    public const string EmptyItem = "EmptyItem";
 }
 
 public static class Service

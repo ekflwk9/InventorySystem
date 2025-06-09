@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class InventoryUi : MonoBehaviour, IValueUi<int>
 {
     [SerializeField] private Slot[] slot;
-    public bool isOutRange { get; private set; } = false;
 
     private void Reset()
     {
@@ -34,17 +32,15 @@ public class InventoryUi : MonoBehaviour, IValueUi<int>
 
     public void SetValue(int _value)
     {
-        var item = ItemManager.GetItem(_value);
-
         for (int i = 0; i < slot.Length; i++)
         {
-            slot[i].SetSlot(item);
-            break;
-        }
-    }
+            var slotItem = slot[i].itemId;
 
-    public void OutRangeMouse(bool _isOut)
-    {
-        isOutRange = _isOut;
+            if (slotItem == 0 || slotItem == _value)
+            {
+                slot[i].SetSlot(_value);
+                break;
+            }
+        }
     }
 }

@@ -22,13 +22,14 @@ public class ItemInfoUi : MonoBehaviour, IValueUi<bool>, IValueUi<int>
     public void SetValue(bool _value)
     {
         this.gameObject.SetActive(_value);
+        this.transform.position = Input.mousePosition;
     }
 
     public void SetValue(int _value)
     {
         var item = ItemManager.GetItem(_value);
 
-        itemName.text = item.name;
         itemInfo.text = item.info;
+        itemName.text = item.itemName;
     }
 }

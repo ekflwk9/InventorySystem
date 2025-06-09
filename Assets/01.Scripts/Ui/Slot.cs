@@ -6,23 +6,45 @@ using UnityEngine.UI;
 public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     public int itemId { get; private set; }
+    private int count;
+
     [SerializeField] private Image icon;
-    [SerializeField] private TMP_Text count;
+    [SerializeField] private TMP_Text countText;
 
     private void Reset()
     {
         icon = this.TryGetChildComponent<Image>(StringMap.Icon);
         if (icon != null) icon.color = Color.clear;
 
-        count = this.TryGetChildComponent<TMP_Text>(StringMap.Count);
-        if (count != null) count.text = "";
+        countText = this.TryGetChildComponent<TMP_Text>(StringMap.Count);
+        if (countText != null) countText.text = "";
     }
 
-    public void SetSlot(Item _item)
+    public void SetSlot(int _itemId)
     {
-        itemId = _item.id;
-        icon.sprite = _item.icon;
-        icon.color = Color.white;
+        if (_itemId != 0)
+        {
+            var item = ItemManager.GetItem(_itemId);
+
+            itemId = item.id;
+            count = 1;
+            icon.sprite = item.icon;
+            icon.color = Color.white;
+        }
+
+        else if (itemId == _itemId && count > 1)
+        {
+            count++;
+            countText.text = count.ToString();
+        }
+
+        else
+        {
+            itemId = 0;
+            count = 0;
+            countText.text = "";
+            icon.color = Color.clear;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -31,6 +53,7 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ID
         {
             UiManager.Active(UiType.Drag, true);
             UiManager.SetInt(UiType.Drag, itemId);
+            UiManager.Active(UiType.ItemInfo, false);
         }
     }
 

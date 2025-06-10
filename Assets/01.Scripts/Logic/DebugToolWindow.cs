@@ -25,7 +25,7 @@ public class DebugToolWindow : EditorWindow
 
     private void GetItem()
     {
-        Inventory.instance.GetItem(itemId);
+        Inventory.Instance.GetItem(itemId);
     }
 }
 #endif

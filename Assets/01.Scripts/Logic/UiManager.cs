@@ -33,7 +33,7 @@ public class UiManager : MonoBehaviour
 
     public void Add<T>(UiBase _ui) where T : UiBase
     {
-        var type = typeof(T); 
+        var type = typeof(T);
 
         if (!ui.ContainsKey(type)) ui.Add(type, _ui);
         else Service.Log($"{_ui.name}은 이미 추가된 Ui");
@@ -60,6 +60,6 @@ public class UiManager : MonoBehaviour
         var type = typeof(T);
 
         if (ui.ContainsKey(type)) ui[type].Show(_isActive);
-        else Service.Log($"{type}이라는 Ui는 추가된적이 없음");
+        else Service.Log($"{type.Name}이라는 Ui는 추가된적이 없음");
     }
 }

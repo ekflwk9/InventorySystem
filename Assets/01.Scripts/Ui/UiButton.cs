@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public abstract class UiButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+public abstract class UiButton : UiBase, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] protected GameObject touch;
 
-    protected virtual void Reset()
+    public override void Init()
     {
-        touch = this.TryGetChildComponent<GameObject>(StringMap.Touch);
+        touch = this.TryFindChild(StringMap.Touch);
     }
 
     public abstract void OnPointerClick(PointerEventData eventData);
@@ -19,6 +19,6 @@ public abstract class UiButton : MonoBehaviour, IPointerClickHandler, IPointerEn
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        if(!touch.activeSelf) touch.SetActive(false);
+        if(touch.activeSelf) touch.SetActive(false);
     }
 }

@@ -4,24 +4,19 @@ public class Inventory : MonoBehaviour
 {
     public static Inventory Instance { get; private set; }
     [field: SerializeField] public Slot[] slot { get; private set; }
-    [field: SerializeField] public int[] count { get; private set; }
 
-    public void Init(int _slotLength)
+    public void Init(SlotUi[] _slotUi)
     {
-        slot = new Slot[_slotLength];
-        count = new int[_slotLength];
-    }
+        slot = new Slot[_slotUi.Length];
 
-    private void Awake()
-    {
         if (Inventory.Instance == null)
         {
             Inventory.Instance = this;
             var empty = Service.FindRresource<Item>(StringMap.Item, StringMap.EmptyItem);
 
-            for (int i = 0; i < slot.Length; i++)
+            for (int i = 0; i < _slotUi.Length; i++)
             {
-                slot[i] = new Slot(ItemType.None, empty);
+                slot[i] = new Slot(_slotUi[i].type, empty);
             }
         }
     }
@@ -36,22 +31,21 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < slot.Length; i++)
         {
-            if (count[i] < gameItem.maxCount)
+            //재료 / 최대 획득 카운트가 아닐 경우
+            if (slot[i].item.id == _itemId && gameItem.type == ItemType.None && slot[i].itemCount < gameItem.maxCount)
             {
-                if (slot[i].item.id == _itemId)
-                {
-                    count[i]++;
-                    UiManager.Instance.Get<InventoryUi>().SetInventoryView(i);
-                    return true;
-                }
+                slot[i].GetCount();
+                UiManager.Instance.Get<InventoryUi>().SetInventoryView(i);
+                return true;
+            }
 
-                else if (slot[i].item.id == -1)
-                {
-                    count[i]++;
-                    slot[i].GetItem(gameItem);
-                    UiManager.Instance.Get<InventoryUi>().SetInventoryView(i);
-                    return true;
-                }
+            //슬롯에 장비가 없을 경우
+            else if (slot[i].item.id == -1)
+            {
+                slot[i].GetItem(_itemId);
+                slot[i].GetCount();
+                UiManager.Instance.Get<InventoryUi>().SetInventoryView(i);
+                return true;
             }
         }
 
@@ -60,39 +54,33 @@ public class Inventory : MonoBehaviour
 
     public void RefreshSlot(int _lastSlot, int _nextSlot)
     {
+        var lastItemCount = slot[_lastSlot].itemCount;
+        var nextItemCount = slot[_nextSlot].itemCount;
+
         //아이템이 같음 / 재료, 소모품일 경우
         if (slot[_lastSlot].item.id == slot[_nextSlot].item.id && slot[_nextSlot].item.type == ItemType.None)
         {
-            var upCount = count[_lastSlot] + count[_nextSlot];
+            var resultCount = slot[_nextSlot].GetCount(lastItemCount + nextItemCount);
 
-            //현재 최대 획득 카운트를 넘겼을 경우
-            if (upCount > slot[_nextSlot].item.maxCount)
-            {
-                count[_lastSlot] = upCount - slot[_nextSlot].item.maxCount;
-                count[_nextSlot] = slot[_nextSlot].item.maxCount;
-            }
+            if (resultCount == 0) slot[_lastSlot].GetItem(-1);
 
-            //모두 합칠 수 있는 상황일 경우
-            else
-            {
-                slot[_lastSlot].GetItem(-1);
-                count[_lastSlot] = 0;
-
-                count[_nextSlot] = upCount;
-            }
+            slot[_lastSlot].GetCount(resultCount);
         }
 
         //장비 또는 서로 다를 경우 맞교환
         else
         {
-            var tempItem = slot[_lastSlot];
-            var tempCount = count[_lastSlot];
+            var lastItemId = slot[_lastSlot].item.id;
+            var nextItemId = slot[_nextSlot].item.id;
 
-            slot[_lastSlot] = slot[_nextSlot];
-            slot[_nextSlot] = tempItem;
+            if (slot[_lastSlot].CheckSlot(nextItemId) && slot[_nextSlot].CheckSlot(lastItemId))
+            {
+                slot[_lastSlot].GetItem(nextItemId);
+                slot[_nextSlot].GetItem(lastItemId);
 
-            count[_lastSlot] = count[_nextSlot];
-            count[_nextSlot] = tempCount;
+                slot[_lastSlot].GetCount(nextItemCount);
+                slot[_nextSlot].GetCount(lastItemCount);
+            }
         }
 
         //Ui 업데이트

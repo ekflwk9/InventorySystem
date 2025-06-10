@@ -5,8 +5,8 @@ public enum ItemType
 {
     None,
     Armor,
-    Shoes,
     Pants,
+    Shoes,
     Weapon,
 }
 

@@ -37,16 +37,12 @@ public class DragUi : UiBase
 
     public void EndDrag()
     {
-        if (nextSlot != -1)
+        if (nextSlot != -1 && lastSlot != nextSlot)
         {
-            if(lastSlot != nextSlot) Inventory.Instance.RefreshSlot(lastSlot, nextSlot);
-
-            UiManager.Instance.Show<ItemInfoUi>(true);
-            UiManager.Instance.Get<ItemInfoUi>().SetInfo(nextSlot);
+            Inventory.Instance.RefreshSlot(lastSlot, nextSlot);
         }
 
         icon.color = Color.clear;
-
         nextSlot = -1;
         lastSlot = -1;
     }

@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class SlotUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     protected bool isFull;
+
+    [field: SerializeField] public ItemType type { get; private set; }
     [SerializeField] protected int slotIndex;
 
     [SerializeField] protected Image icon;
@@ -40,7 +42,7 @@ public class SlotUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
         {
             isFull = true;
 
-            var itemCount = Inventory.Instance.count[slotIndex];
+            var itemCount = slot.itemCount;
 
             if (itemCount > 1) countText.text = itemCount.ToString();
             else countText.text = "";
@@ -65,7 +67,11 @@ public class SlotUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, 
 
     public virtual void OnEndDrag(PointerEventData eventData)
     {
-        if (isFull) UiManager.Instance.Get<DragUi>().EndDrag();
+        if (isFull)
+        {
+            UiManager.Instance.Get<DragUi>().EndDrag();
+            UiManager.Instance.Show<ItemInfoUi>(false);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)

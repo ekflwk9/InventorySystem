@@ -8,10 +8,6 @@ public class InventoryUi : UiBase
     public override void Init()
     {
         slot = this.transform.GetComponentsInChildren<SlotUi>();
-        var inventory = FindObjectOfType<Inventory>();
-
-        if (inventory != null) inventory.Init(slot.Length);
-        else Service.Log("현재 Inventory 컴포넌트가 존재하는 오브젝트가 없음");
 
         for (int i = 0; i < slot.Length; i++)
         {
@@ -21,6 +17,11 @@ public class InventoryUi : UiBase
 
     private void Start()
     {
+        var inventory = FindObjectOfType<Inventory>();
+
+        if (inventory != null) inventory.Init(slot);
+        else Service.Log("현재 Inventory 컴포넌트가 존재하는 오브젝트가 없음");
+
         UiManager.Instance.Add<InventoryUi>(this);
         this.gameObject.SetActive(false);
     }
